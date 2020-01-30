@@ -1,13 +1,14 @@
-FROM golang:latest
+FROM golang:latest as builder
 
-WORKDIR /Downloads/doodle/wantedly
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+WORKDIR /go/src/github.com/nonnonno/docker_webapp
+COPY . .
+RUN go build main.go
 
-# Copy the local package files to the container’s workspace.
-ADD . /go/src/github.com/nonnonno/docker_webapp/api
-
-# Install api binary globally within container 
-RUN go install github.com/nonnonno/docker_webapp/api 
-
-# Expose default port (8080)
-EXPOSE 8080
+# runtime image
+FROM alpine
+COPY --from=builder /go/src/github.com/nonnonno/docker_webapp
+CMD /app/main $PORT 
 
