@@ -1,14 +1,7 @@
-FROM golang:latest as builder
+FROM golang:1.9
 
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
-WORKDIR /go/src/github.com/nonnonno/docker_webapp
-COPY . .
-RUN go build main.go
+RUN mkdir /echo
+RUN go get github.com/ant0ine/go-json-rest/rest
+COPY api.go /echo
 
-# runtime image
-FROM alpine
-COPY --from=builder /go/src/github.com/nonnonno/docker_webapp
-CMD /app/main $PORT 
-
+CMD ["go","run","/echo/api.go"]
